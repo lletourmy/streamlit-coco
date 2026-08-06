@@ -45,9 +45,12 @@ make check
 # Run manual UI checklists under doc/features/ before 0.x / 1.0 cuts
 ```
 
-- Set `version` in `pyproject.toml`
-- Move `CHANGELOG.md` `[Unreleased]` → `## [X.Y.Z] — YYYY-MM-DD`
-- Merge to `main` on `-dev` (recommended before sync)
+**Required before tagging (do not skip):**
+
+1. Bump `version` in `pyproject.toml`
+2. **Clean + update `CHANGELOG.md`:** move `[Unreleased]` → `## [X.Y.Z] — YYYY-MM-DD`, drop empty subsections, keep one clear Added/Changed/Fixed/Security block
+3. **Clean + update `doc/roadmap.md`:** status line, **Now** / **Next**, remove shipped items from the active plan
+4. Merge to `main` on `-dev` (recommended before sync)
 
 ### 2. Sync the public tree
 

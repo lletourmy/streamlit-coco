@@ -35,6 +35,7 @@ make chat      # Streamlit demo
 - Approval buttons left→right: Approve once · Always allow · Deny.
 - AskUserQuestion / ExitPlanMode always go through pending HITL; never “Always allow”.
 - Update `CHANGELOG.md` `[Unreleased]` for user-visible changes; update feature checklists when UX changes.
+- **Before cutting a release:** clean + update `CHANGELOG.md` **and** `doc/roadmap.md` (see `doc/deployment/publish.md`). Do not tag until both are current.
 - Prefer small, focused diffs; no drive-by refactors.
 
 ## Testing

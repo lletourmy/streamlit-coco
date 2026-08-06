@@ -2,8 +2,11 @@
 
 Living plan. Product detail: [`doc/prd.md`](prd.md). Shipped history: [`CHANGELOG.md`](../CHANGELOG.md).
 
-**Status:** Alpha `0.1.0` published on PyPI (temporary Trusted Publisher: [`lletourmy/streamlit-coco`](https://github.com/lletourmy/streamlit-coco)).  
+**Status:** Alpha **`0.1.0`** on PyPI ([pypi.org/project/streamlit-coco](https://pypi.org/project/streamlit-coco/)).  
+**Publisher:** temporary Trusted Publisher on [`lletourmy/streamlit-coco`](https://github.com/lletourmy/streamlit-coco) (DevoteamSP org not yet PyPI-validated).  
 **Last updated:** 2026-08-06
+
+> **Before every release:** clean + update [`CHANGELOG.md`](../CHANGELOG.md) (`[Unreleased]` → version section) **and** this roadmap (status / Now / Next). See [`deployment/publish.md`](deployment/publish.md).
 
 ---
 
@@ -11,9 +14,10 @@ Living plan. Product detail: [`doc/prd.md`](prd.md). Shipped history: [`CHANGELO
 
 | Priority | Item | Ref |
 | --- | --- | --- |
-| P0 | Post-release: switch publisher back to DevoteamSP when org is PyPI-validated | [publish.md](deployment/publish.md) |
+| P0 | Switch PyPI publisher back to `DevoteamSP/streamlit-coco` when the org is validated | [publish.md](deployment/publish.md) |
+| P1 | Remote CoCo APIs (no CLI dependency) | [#4](https://github.com/DevoteamSP/streamlit-coco-dev/issues/4) |
 
-Manual checklists: [`doc/features/README.md`](features/README.md) — re-run before release.
+Manual checklists: [`doc/features/README.md`](features/README.md) — re-run before the next tag.
 
 ---
 
@@ -21,7 +25,6 @@ Manual checklists: [`doc/features/README.md`](features/README.md) — re-run bef
 
 | Item | Ref |
 | --- | --- |
-| Remote CoCo APIs (no CLI dependency) | [#4](https://github.com/DevoteamSP/streamlit-coco-dev/issues/4) |
 | Approval audit log persistence (SEC-01) | — |
 | Least-privilege role documentation (SEC-02) | — |
 | Deployment docs (Docker, SPCS) | [deployment/](deployment/README.md); PRD §8 / G6 |
