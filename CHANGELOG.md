@@ -4,13 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning: date-based (`YYYY-MM-DD`) until v1.0.0 is cut, then semantic versioning.
-Package version in `pyproject.toml` remains `0.1.0` (alpha) until the first PyPI release is cut.
+Package version in `pyproject.toml` is `0.1.0` (first PyPI release).
 
 Living plan (what’s next): [`doc/roadmap.md`](doc/roadmap.md).
 
 ---
 
 ## [Unreleased]
+
+## [0.1.0] — 2026-08-06
+
+First PyPI release of `streamlit-coco` (alpha). Published from temporary Trusted Publisher on [`lletourmy/streamlit-coco`](https://github.com/lletourmy/streamlit-coco).
 
 ### Changed
 - **Temporary PyPI release repo** — `make sync-release` / Trusted Publisher gate target [`lletourmy/streamlit-coco`](https://github.com/lletourmy/streamlit-coco) until DevoteamSP is validated on PyPI ([`doc/deployment/publish.md`](doc/deployment/publish.md))
@@ -50,9 +54,9 @@ Living plan (what’s next): [`doc/roadmap.md`](doc/roadmap.md).
 
 ### Changed
 - [`doc/prd.md`](doc/prd.md) reconciled with shipped Phase 3; FR-S* / FR-ST* status; FR-S3 superseded by tools-display SPEC (not “collapse cards”)
-- [`doc/roadmap.md`](doc/roadmap.md) — Later: FR-S2, FR-S7, FR-ST4 truncation, Vite/CCv2, e2e; Next: Docker/SPCS docs; PyPI `0.1.0` blocked on Trusted Publisher validation
+- [`doc/roadmap.md`](doc/roadmap.md) — Later: FR-S2, FR-S7, FR-ST4 truncation, Vite/CCv2, e2e; Next: Docker/SPCS docs; PyPI `0.1.0` via temporary Trusted Publisher
 - `doc-dev/` — development-only docs tree; excluded from `make sync-release` and sdist (never published to `streamlit-coco`)
-- Package / README / identity URLs point at the public [`streamlit-coco`](https://github.com/DevoteamSP/streamlit-coco) repo; development continues on [`streamlit-coco-dev`](https://github.com/DevoteamSP/streamlit-coco-dev)
+- Package / README / identity URLs point at the public [`streamlit-coco`](https://github.com/lletourmy/streamlit-coco) repo; development continues on [`streamlit-coco-dev`](https://github.com/DevoteamSP/streamlit-coco-dev)
 - GitHub repository renamed to [`DevoteamSP/streamlit-coco-dev`](https://github.com/DevoteamSP/streamlit-coco-dev) (package name remains `streamlit-coco`)
 - Examples `structured_output.py` / `approval_gate.py`: `get_or_create_session` + eager `start()` for CCv2 transcript across reruns
 - Chat demo sidebar: compact status badges; Settings popover; test prompts behind a toggle

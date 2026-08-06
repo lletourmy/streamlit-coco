@@ -2,7 +2,7 @@
 
 Living plan. Product detail: [`doc/prd.md`](prd.md). Shipped history: [`CHANGELOG.md`](../CHANGELOG.md).
 
-**Status:** Alpha `0.1.0` — Phase 3 shipped. PyPI `0.1.0` via temporary Trusted Publisher on [`lletourmy/streamlit-coco`](https://github.com/lletourmy/streamlit-coco) (DevoteamSP org not yet PyPI-validated).  
+**Status:** Alpha `0.1.0` published on PyPI (temporary Trusted Publisher: [`lletourmy/streamlit-coco`](https://github.com/lletourmy/streamlit-coco)).  
 **Last updated:** 2026-08-06
 
 ---
@@ -11,7 +11,7 @@ Living plan. Product detail: [`doc/prd.md`](prd.md). Shipped history: [`CHANGELO
 
 | Priority | Item | Ref |
 | --- | --- | --- |
-| P0 | Tag + PyPI publish `0.1.0` `streamlit-coco[sdk]` | [publish.md](deployment/publish.md) — temporary publisher: `lletourmy/streamlit-coco` |
+| P0 | Post-release: switch publisher back to DevoteamSP when org is PyPI-validated | [publish.md](deployment/publish.md) |
 
 Manual checklists: [`doc/features/README.md`](features/README.md) — re-run before release.
 
