@@ -155,15 +155,37 @@ Native transcript / field output + approvals + Stop. App owns input.
 | `approval_key_prefix` | `"coco"` | Widget key namespace |
 | `use_fragment` | `True` | `@st.fragment` polling |
 | `run_every` | `0.25` | Seconds; paused while approval pending |
-| `text_renderer` | `None` | `"markdown"` (default) / `"write"` / `"text"` / … or callable |
+| `text_renderer` | `None` | `"markdown"` (default) / `"write"` / `"text"` / … or callable. Default markdown highlights fenced code blocks via `st.code` |
+| `show_copy` | `True` | Clipboard controls on assistant messages and tool cards |
+| `max_messages` | `None` | Transcript window size; **Load earlier** reveals older items |
 | `on_structured_output` | `None` | `Callable[[dict, CocoChatResult], None]` |
 | `structured_output_container` | `None` | Container for structured render |
 
 Feature doc: [`features/panel/panel.md`](features/panel/panel.md).
 
-### `chat_input_bar(session, *, placeholder=…, connecting_placeholder=…, key=None) -> str | None`
+### `chat_input_bar(session, *, placeholder=…, connecting_placeholder=…, key=None, accept_file=False, …) -> str | None`
 
 `st.chat_input` wired to connect/run state; sends via `send_prompt` on submit. Disabled only after a failed boot (`ERROR` and not ready).
+
+Optional file attachments (when the installed Streamlit supports `accept_file` on `st.chat_input`):
+
+| Param | Default | Notes |
+| --- | --- | --- |
+| `accept_file` | `False` | `True` / `"multiple"` enables chat attachments |
+| `file_type` | `None` | Passed to chat input; also used as extension allowlist |
+| `max_upload_size` | `None` | Soft cap forwarded to Streamlit + library `max_bytes` |
+| `upload_subdir` | `"_uploads"` | Quarantine under `CocoOptions.cwd` |
+| `upload_overwrite` | `"replace"` | `"error"` / `"replace"` / `"skip"` |
+| `inject_upload_paths` | `True` | Prefix the prompt with saved ``_uploads/…`` paths |
+
+### `upload_to_cwd(target, files, *, subdir="_uploads", overwrite="error", max_bytes=…, allowed_extensions=…) -> list[UploadedPath]`
+
+Streamlit-free helper: write browser uploads (or `(name, bytes)` tuples) under `cwd/subdir`.  
+`target` may be a path, `CocoOptions`, or `CocoSession`. Raises `CwdUploadError` on bad names, disallowed extensions, oversize payloads, or overwrite conflicts.
+
+### `cwd_uploader(target, *, label=…, overwrite="error", …) -> list[UploadedPath]`
+
+Sidebar / chrome helper: `st.file_uploader` + `upload_to_cwd`, with an inventory caption for files already in `_uploads/`.
 
 ### `send_prompt(session, prompt) -> None`
 
@@ -293,7 +315,8 @@ CocoError
 ├── SessionStartError
 ├── SessionNotReadyError
 ├── ApprovalTimeoutError          (also TimeoutError)
-└── QueryError
+├── QueryError
+└── CwdUploadError
 ```
 
 Catch `CocoError` for app-level handling; use subclasses for specific recovery.

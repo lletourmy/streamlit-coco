@@ -49,7 +49,7 @@ Teams building Streamlit apps on Snowflake need AI-assisted data exploration, co
 - Python 3.10+
 - Streamlit >= 1.53
 - Snowflake account with Cortex Code access
-- `cortex-code-agent-sdk >= 1.0.2`
+- `cortex-code-agent-sdk >= 1.0.7`
 
 ---
 

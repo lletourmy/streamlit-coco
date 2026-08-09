@@ -7,6 +7,7 @@ from typing import Any
 import streamlit as st
 
 from streamlit_coco.ask_user import extract_questions
+from streamlit_coco.clipboard import render_copy_button
 from streamlit_coco.debug import is_debug_mode
 from streamlit_coco.sql_tool import extract_sql_text, parse_sql_result_table
 from streamlit_coco.tool_extract import (
@@ -106,6 +107,7 @@ def render_tool_card(
     item: dict[str, Any],
     *,
     show_tool_details: bool = True,
+    show_copy: bool = True,
 ) -> None:
     """Dispatch a transcript tool item to a compact family-specific expander."""
     name = str(item.get("name") or "unknown")
@@ -150,7 +152,56 @@ def render_tool_card(
                 show_tool_details=show_tool_details,
             )
 
+        if show_copy:
+            _maybe_copy_tool_payload(item, family=family, tool_input=tool_input)
         _maybe_raw_payload(item)
+
+
+def _maybe_copy_tool_payload(
+    item: dict[str, Any],
+    *,
+    family: ToolFamily,
+    tool_input: dict[str, Any],
+) -> None:
+    """Offer clipboard copy for the most useful tool payload."""
+    status = str(item.get("status") or "")
+    if status not in {"completed", "error"}:
+        return
+    item_id = str(item.get("id") or item.get("tool_use_id") or id(item))
+    text: str | None = None
+    label = "Copy result"
+
+    if family == ToolFamily.SQL:
+        sql = extract_sql_text(tool_input)
+        if sql:
+            text, label = sql, "Copy SQL"
+        else:
+            text = result_as_text(item.get("result"))
+    elif family == ToolFamily.BASH:
+        command = extract_command(tool_input)
+        result = result_as_text(item.get("result"))
+        if result:
+            text, label = result, "Copy output"
+        elif command:
+            text, label = command, "Copy command"
+    elif family in {ToolFamily.READ, ToolFamily.GREP, ToolFamily.GENERIC}:
+        text = result_as_text(item.get("result"))
+    elif family == ToolFamily.WRITE:
+        text = extract_content(tool_input)
+        label = "Copy content"
+    elif family == ToolFamily.EDIT:
+        old, new = extract_old_new(tool_input)
+        path = extract_path(tool_input)
+        text = new or unified_diff(old, new, path=path) or old
+        label = "Copy after"
+    elif family == ToolFamily.GLOB:
+        paths, _total = result_as_path_list(item.get("result"))
+        if paths:
+            text = "\n".join(paths)
+            label = "Copy paths"
+
+    if text:
+        render_copy_button(text, key=f"coco_copy_tool_{item_id}", label=label)
 
 
 def render_approval_preview(tool_name: str, tool_input: dict[str, Any] | None) -> None:
@@ -379,7 +430,7 @@ def _render_bash(
     if show_tool_details:
         text = result_as_text(item.get("result"))
         if text:
-            st.text(truncate_text(text))
+            st.code(truncate_text(text), language="text")
 
 
 def _render_glob(
@@ -437,7 +488,10 @@ def _render_grep(
     # Full match dump is noisy — preview only in debug mode.
     if is_debug_mode():
         preview = matches[:20]
-        st.text("\n".join(truncate_text(line, 160) for line in preview))
+        st.code(
+            "\n".join(truncate_text(line, 160) for line in preview),
+            language="text",
+        )
         if count > len(preview):
             st.caption(f"+{count - len(preview)} more")
 

@@ -137,4 +137,4 @@ By design, this library does NOT address:
 | SEC-01 | Persist approval audit log (who approved what, when) | Laurent Letourmy | v0.2 |
 | SEC-02 | Document least-privilege role recommendation for connected Snowflake account | Laurent Letourmy | v0.2 |
 | SEC-03 | Commit `uv.lock` for reproducible builds (currently gitignored) | Laurent Letourmy | v0.1.1 |
-| SEC-04 | Add SBOM generation to CI release workflow | Laurent Letourmy | v0.2 |
+| SEC-04 | Add SBOM generation to CI release workflow | Laurent Letourmy | ✅ `0.1.5` (CycloneDX on tag release) |

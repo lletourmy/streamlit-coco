@@ -40,9 +40,23 @@ Package name on PyPI is always `streamlit-coco`.
 
 ### 1. Prepare in `-dev`
 
+Create (or complete) release kits for the version:
+
 ```bash
-make check
-# Run manual UI checklists under doc/features/ before 0.x / 1.0 cuts
+VER=X.Y.Z
+mkdir -p "doc/releases/${VER}/screenshots" "doc-dev/releases/${VER}"
+cp -R doc/releases/_template/. "doc/releases/${VER}/"
+cp -R doc-dev/releases/_template/. "doc-dev/releases/${VER}/"
+```
+
+- Public checklist: [`doc/releases/`](../releases/README.md) → `doc/releases/X.Y.Z/CHECKLIST.md`  
+  (current: [`doc/releases/0.1.5/`](../releases/0.1.5/))
+- Outreach (LinkedIn / Medium / community): [`doc-dev/releases/`](../../doc-dev/releases/README.md)  
+  (current: [`doc-dev/releases/0.1.5/`](../../doc-dev/releases/0.1.5/)) — **never synced** to the public repo
+
+```bash
+make test-all
+# Manual UI checklists under doc/features/ before 0.x / 1.0 cuts
 ```
 
 **Required before tagging (do not skip):**
@@ -50,7 +64,9 @@ make check
 1. Bump `version` in `pyproject.toml`
 2. **Clean + update `CHANGELOG.md`:** move `[Unreleased]` → `## [X.Y.Z] — YYYY-MM-DD`, drop empty subsections, keep one clear Added/Changed/Fixed/Security block
 3. **Clean + update `doc/roadmap.md`:** status line, **Now** / **Next**, remove shipped items from the active plan
-4. Merge to `main` on `-dev` (recommended before sync)
+4. **Update `doc/prd.md`** (and `doc/api.md` if APIs changed)
+5. **Screenshots** in `doc/releases/X.Y.Z/screenshots/`; **LinkedIn / Medium / community** drafts in `doc-dev/releases/X.Y.Z/`
+6. Merge to `main` on `-dev` (recommended before sync)
 
 ### 2. Sync the public tree
 
@@ -58,8 +74,14 @@ make check
 # Preview
 DRY_RUN=1 make sync-release
 
-# Write + commit + push to lletourmy/streamlit-coco
+# Write + commit + push to lletourmy/streamlit-coco (PyPI Trusted Publisher)
 COMMIT=1 PUSH=1 MESSAGE="Release X.Y.Z" make sync-release
+
+# Also mirror to the org public repo (same tree; PyPI still gates on lletourmy until validated)
+COMMIT=1 PUSH=1 MESSAGE="Release X.Y.Z" \
+  RELEASE_REPO="$PWD/../streamlit-coco-org" \
+  RELEASE_REMOTE="https://github.com/DevoteamSP/streamlit-coco.git" \
+  make sync-release
 ```
 
 Default target clone: `../streamlit-coco` (override with `RELEASE_REPO=`).
@@ -68,13 +90,16 @@ Default remote: `https://github.com/lletourmy/streamlit-coco.git` (override with
 Excluded from the public tree: `.cursor/`, `.agents/`, `.claude/`, `doc-dev/`,
 local caches, `dist/`, and this sync script.
 
-### 3. Tag on **streamlit-coco** (not `-dev`)
+### 3. Tag on **lletourmy/streamlit-coco** (PyPI publisher; not `-dev`)
 
 ```bash
 cd ../streamlit-coco
 git tag -a vX.Y.Z -m "vX.Y.Z"
 git push origin vX.Y.Z
 ```
+
+Optionally mirror the same annotated tag on `DevoteamSP/streamlit-coco` for discoverability
+(PyPI upload still only runs when `github.repository == 'lletourmy/streamlit-coco'`).
 
 The Release workflow then:
 

@@ -88,7 +88,7 @@ streamlit-coco Dependency not found on PyPI and could not be audited (0.1.0)
 
 - [ ] Publish to PyPI so pip-audit can verify the package itself
 - [ ] Commit `uv.lock` for reproducible dep resolution
-- [ ] Add SBOM generation to release workflow (CycloneDX or SPDX)
+- [x] Add SBOM generation to release workflow (CycloneDX or SPDX)
 - [ ] Review CodeQL results after first full CI run on `main`
 
 ---

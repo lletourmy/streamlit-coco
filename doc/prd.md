@@ -69,7 +69,7 @@ Designed for Snowflake-native workflows: SQL generation, semantic view design, d
 | NG4 | TypeScript SDK parity | Python-first; TS consumers can use CoCo SDK directly. |
 | NG5 | Slack / MCP server implementations | May come later; v1 focuses on Streamlit embedding. |
 | NG6 | Remote agent proxy / sidecar HTTP service | Explicitly out of scope; CoCo CLI must run on the Streamlit server host. |
-| NG7 | File upload into `cwd` from the browser | Deferred; users reference Snowflake objects or paths already on the server. |
+| NG7 | File upload into `cwd` from the browser | **`0.1.5`** — see [`features/file-upload/file-upload.md`](features/file-upload/file-upload.md) (`upload_to_cwd` / chat attachments). |
 
 ---
 
@@ -379,8 +379,8 @@ When `permission_mode="plan"`, native `panel()` shows `render_plan_banner()` wit
 | FR-S3 | Tool activity visible without hunting; errors prominent | P1 | ✅ **Superseded** — compact meaningful expanders (label always visible; body collapsed); auto-open on error ([`tools-display/SPEC`](features/tools-display/SPEC.md)); debug **Raw tool payload** nested collapsed |
 | FR-S4 | Stop button sends SDK cancel/interrupt; UI marks run as `cancelled` | P0 | ✅ |
 | FR-S5 | Show spinner / pulsing indicator during tool execution | P1 | ✅ progress captions while `running`; cleared on complete/error |
-| FR-S6 | Render code blocks and SQL with syntax highlighting | P1 | ⏳ Later |
-| FR-S7 | Copy-to-clipboard on assistant messages and tool results | P2 | ⏳ Later (explicit non-goal in current tools-display revision) |
+| FR-S6 | Render code blocks and SQL with syntax highlighting | P1 | ✅ `0.1.5` — fenced markdown → `st.code`; SQL/bash cards highlighted |
+| FR-S7 | Copy-to-clipboard on assistant messages and tool results | P2 | ✅ `0.1.5` — `show_copy=` (default on) |
 
 ---
 
@@ -391,7 +391,7 @@ When `permission_mode="plan"`, native `panel()` shows `render_plan_banner()` wit
 | FR-ST1 | Session keyed in registry / `st.session_state`; transcript, pending approval, status on `CocoSession` | ✅ |
 | FR-ST2 | Changing `options` mid-session calls `session.reset()` or warns user (configurable) | ⚠️ partial (`sync_options` / reset available; no forced warn UX) |
 | FR-ST3 | `reset()` clears transcript and closes SDK client | ✅ |
-| FR-ST4 | Transcript persists across reruns; optional `max_messages` truncation with “load earlier” | ✅ persistence; ⏳ truncation — Later |
+| FR-ST4 | Transcript persists across reruns; optional `max_messages` truncation with “load earlier” | ✅ persistence; ✅ truncation/`Load earlier` in `0.1.5` |
 | FR-ST5 | Multiple independent sessions via distinct `key` values on same page | ✅ |
 
 ---
@@ -626,7 +626,7 @@ Legacy CCv2 `chat()` keeps an all-in-one panel (header, transcript, approval car
 | --- | --- | --- |
 | 14.1 | Remote agent proxy (sidecar HTTP service for Streamlit Cloud)? | **No.** CoCo CLI runs on the Streamlit server host only; no proxy layer. |
 | 14.2 | Structured output UX? | **Inline in the transcript by default** (collapsible JSON). App authors may delegate via **`on_structured_output`** and/or **`structured_output_container`** (see §6.6). |
-| 14.3 | File upload into `cwd`? | **No** in v1. Users reference server-side paths or Snowflake objects. |
+| 14.3 | File upload into `cwd`? | **`0.1.5`** — [`features/file-upload/file-upload.md`](features/file-upload/file-upload.md). |
 | 14.4 | Branding? | **“CoCo”** in all user-facing UI copy. |
 | 14.5 | Async Streamlit / fragments? | **Yes.** `@st.fragment` is the default rerun boundary for `panel()` and `chat()`. |
 | 14.6 | Primary Streamlit UX? | **`panel()` + app-owned `st.chat_input` / `send_prompt()`.** Legacy all-in-one **`chat()`** (CCv2) remains supported. |

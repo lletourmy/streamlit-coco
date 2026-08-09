@@ -1,6 +1,6 @@
 # Feature docs & test plans
 
-Manual golden-path checklists (DSP N1). Run before releases; link from PRs that touch the feature.
+Manual golden-path checklists (DSP N1). Run before releases; link from PRs that touch the feature. Automated gates (unit + Playwright UX): [`../testing.md`](../testing.md).
 
 Narrative docs follow DSP §9 (What / Why / How / Limitations). Checklists are the executable sign-off.
 
@@ -16,6 +16,7 @@ Package API (all public exports): [`../api.md`](../api.md).
 | Structured output | [structured-output/structured-output.md](structured-output/structured-output.md) | [structured-output/test-checklist.md](structured-output/test-checklist.md) | `make structured`; `structured-json` |
 | Headless query / multi-turn | [headless/headless.md](headless/headless.md) | [headless/test-checklist.md](headless/test-checklist.md) | `make headless` |
 | Pluggable text renderer | [text-renderer/text-renderer.md](text-renderer/text-renderer.md) | [text-renderer/test-checklist.md](text-renderer/test-checklist.md) | `panel(..., text_renderer=…)` |
+| File upload into `cwd` | [file-upload/file-upload.md](file-upload/file-upload.md) | [file-upload/test-checklist.md](file-upload/test-checklist.md) | `make cwd-upload` |
 | Legacy CCv2 chat | [chat-ccv2/chat-ccv2.md](chat-ccv2/chat-ccv2.md) | [chat-ccv2/test-checklist.md](chat-ccv2/test-checklist.md) | `make approval` |
 
 ## Suggested run order (release)
@@ -30,7 +31,8 @@ Exploratory prompts: [`examples/testdata/`](../../examples/testdata/).
 
 | Suite | Result | Notes |
 | --- | --- | --- |
-| `uv run pytest tests/` | **31 passed** (2026-07-25) | Unit + smoke; includes CCv2 register-once |
+| `make e2e` (Playwright UX harness) | See CI / local | CoCo-free; [`../testing.md`](../testing.md) |
+| `uv run pytest tests/ --ignore=tests/e2e` | **78 passed** (2026-08-09) | Unit + smoke |
 | `make headless` / `examples/headless_pipeline.py` | **Pass** (2026-07-27) | Multi-turn `run()` + `stream()`; no Streamlit import; signed off in [`headless/test-checklist.md`](headless/test-checklist.md) |
 | UI golden path — panel | **Pass (core)** (2026-07-25) | Signed off in [`panel/test-checklist.md`](panel/test-checklist.md) — steps 1–5 live |
 | UI golden path — approvals | **Pass** (2026-07-26) | Signed off in [`approvals/test-checklist.md`](approvals/test-checklist.md) — golden path 1–10 live |

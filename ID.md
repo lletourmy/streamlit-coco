@@ -42,7 +42,7 @@
 - [ ] Fill owner / KPIs on this sheet
 - [ ] Run and sign off UI checklists on a live CoCo + Snowflake connection
 - [ ] Security threat model + audit pack (`doc/security/`)
-- [ ] Marketing one-pager (`doc/marketing/`)
+- [ ] Marketing one-pager (`doc-dev/marketing/`)
 
 ---
 

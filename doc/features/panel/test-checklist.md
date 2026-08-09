@@ -25,6 +25,16 @@
 | 9 | **Settings** → **Reset session** | Transcript cleared; warm-up reconnects |
 | 10 | **Settings** → **Back to start** | Returns to landing gate; no live worker |
 
+## Panel UX (copy / highlight / windowing)
+
+Automated coverage: `make e2e` (fixture harness). Live CoCo checks below with `make chat`.
+
+| # | Step | Expected |
+| --- | --- | --- |
+| U1 | Ask for a SQL or Python snippet (fenced) | Assistant reply shows highlighted `st.code` blocks (not plain fences only) |
+| U2 | Click the **copy** icon on an assistant message | Icon switches to check briefly; paste matches message text |
+| U3 | Long session with `max_messages` set (or harness) | Caption “N earlier messages hidden”; **Load earlier** reveals older turns |
+
 ## Edge cases
 
 - [ ] Start with missing CLI → failed boot messaging; input disabled only on hard error

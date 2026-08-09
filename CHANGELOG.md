@@ -12,6 +12,25 @@ Living plan (what’s next): [`doc/roadmap.md`](doc/roadmap.md).
 
 ## [Unreleased]
 
+## [0.1.5] — 2026-08-09
+
+Alpha follow-up: browser uploads into the agent workspace, safer transcript UX, Playwright e2e, and SBOM on GitHub Releases.
+Published from temporary Trusted Publisher on [`lletourmy/streamlit-coco`](https://github.com/lletourmy/streamlit-coco); public tree also synced to [`DevoteamSP/streamlit-coco`](https://github.com/DevoteamSP/streamlit-coco).
+
+### Added
+- **File upload into `cwd`** — `upload_to_cwd()` (+ `UploadedPath`, `CwdUploadError`), optional `chat_input_bar(..., accept_file=…)`, and `cwd_uploader()`; demo `examples/cwd_upload_chat.py` (`make cwd-upload`); docs [`doc/features/file-upload/`](doc/features/file-upload/)
+- **Copy-to-clipboard** — assistant messages + tool payloads via CCv2 copy control (`show_copy=` on `panel()` / `render_transcript()`)
+- **Rich markdown / SQL highlighting** — fenced code blocks in chat render with `st.code` + language (SQL/Python/…); bash tool output uses highlighted code blocks
+- **Transcript windowing** — optional `max_messages=` on `panel()` / `render_transcript()` with **Load earlier**
+- **SBOM on release** — CycloneDX JSON attached to GitHub Release assets (`dist/sbom-v*.cdx.json`)
+- **Browser UX e2e** — Playwright suite vs CoCo-free [`examples/e2e_ux_harness.py`](examples/e2e_ux_harness.py) (`make e2e` / CI); process doc [`doc/testing.md`](doc/testing.md)
+- **Per-version release kits** — public [`doc/releases/`](doc/releases/README.md) (checklist, screenshots); outreach in **`doc-dev/releases/`** (LinkedIn, Medium, community — not synced)
+
+### Changed
+- **Copy control** — icon-only Material Symbols `content_copy` button (label is aria/tooltip only)
+- Require **`cortex-code-agent-sdk>=1.0.7`** (`[sdk]` / `[dev]` extras)
+- Security workflow: drop CodeQL (private org needs GHAS license); keep gitleaks + pip-audit
+
 ## [0.1.0] — 2026-08-06
 
 First PyPI release of `streamlit-coco` (alpha).

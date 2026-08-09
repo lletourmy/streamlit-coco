@@ -15,7 +15,9 @@
 3. **Debug escape hatch.** CoCo debug mode may reveal raw tool payloads in a collapsed expander.
 4. **Stable dispatch.** Tool name matching is case- and separator-insensitive (`SQL`, `sql_execute`, `SqlExecute` → same family).
 
-Non-goals (this revision): full Monaco diffs, copy-to-clipboard chrome, custom MCP tool UIs beyond the generic meaningful card, headless programmatic UI.
+Non-goals (this revision): full Monaco diffs, custom MCP tool UIs beyond the generic meaningful card, headless programmatic UI.
+(Copy-to-clipboard shipped separately via `show_copy=` / FR-S7.)
+
 
 ---
 

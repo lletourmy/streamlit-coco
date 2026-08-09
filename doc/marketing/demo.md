@@ -10,7 +10,7 @@
 
 ## Setup (before the demo)
 
-1. Confirm CoCo CLI is authenticated: `cortex-code --version`
+1. Confirm CoCo CLI is authenticated: `cortex --version`
 2. Activate the virtualenv: `source .venv/bin/activate` or `uv sync`
 3. Have a Snowflake database with sample tables (e.g., `SNOWFLAKE_SAMPLE_DATA.TPCH_SF1`)
 4. Terminal + browser side by side
