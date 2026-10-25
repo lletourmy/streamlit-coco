@@ -12,6 +12,32 @@ Living plan (what’s next): [`doc/roadmap.md`](doc/roadmap.md).
 
 ## [Unreleased]
 
+## [0.2.2] — 2026-10-25
+
+Ask CoCo can leave the corner: attached to an edge on the full height of the page, or on the whole page. The page can be told where the window is, and take the rest of the screen. Upgrading from 0.2.0 or 0.2.1: nothing to change; every new parameter is keyword-only with a default that keeps today's behaviour.
+
+### Added
+
+- Three icons in the window's title bar: attach to the left edge, attach to the right edge (full height, `min(30rem, 100vw)` wide), or fill the page. The pressed icon puts the window back. `Features(dock=False)` and `Features(full_page=False)` remove them (both on by default). Each icon shows a hint after 750 ms.
+- A click on the title bar (not on one of its buttons) minimises the window.
+- `ask_coco(on_layout=fn)`: `fn(place)` is called when the window changes place (`closed`, `float`, `left`, `right`, `full`), then the page reruns once. `get_window(key).place` reads it on any run; the browser also writes `data-coco-place` and `--coco-dock-w` on `<html>` for the page's own CSS.
+- `ask_coco(split=True)`: while the window is attached to an edge, the page takes the rest of the screen instead of being covered.
+- Docked and full-page windows sit above the page's header, menu bar and sidebar; the floating window no longer reaches up under them on a short screen.
+- Tests: `tests/e2e/test_window_layout.py` (the places, the switches, the callback and split, the hint, the title bar over the header).
+
+### Changed
+
+- `examples/app_builder` and `examples/bi_to_semantic`: Ask CoCo is the only agent surface, on every screen. The sidebar Off/On switch and the Copilot rail are gone; Build, Fix with CoCo and the BI jobs are sent to the window. App Builder suggests its own questions on each screen, BI → Semantic too. Both use `split=True`.
+- `examples/modern_chat` starts with Ask CoCo (then Rail, then Both) and has a Split screen selector in the sidebar.
+
+### Security
+
+- Development lock: `pip-audit` found 41 advisories in `pillow`, `filelock` and `certifi`. Locked `streamlit` 1.66.1 (it capped `pillow<13`), `pillow` 13.0.0, `certifi` 2026.10.23 and `filelock` 4.2.4 (a `[tool.uv]` override on Python 3.11+, because the Snowflake connector still says `filelock<4`). The package floor is still Streamlit 1.55; the browser tests pass on 1.66.1.
+
+### Fixed
+
+- The Ask CoCo window no longer blinks, and the page's own layers no longer show on top of it, while it waits for an answer. Each poll reruns the window's fragment; when a run was slow, Streamlit faded the stale component (opacity below 1), which made it a stacking context for the fixed window. The host container now keeps opacity 1.
+
 ## [0.2.1] — 2026-10-20
 
 The README names the asset contributor. No code change: `0.2.1` is `0.2.0` with the README that PyPI shows (a published file cannot be changed).

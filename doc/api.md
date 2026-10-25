@@ -1,6 +1,6 @@
 # API reference: streamlit-coco
 
-Public surface of `import streamlit_coco as st_coco`, and of `streamlit_coco.policy` and `streamlit_coco.testing`. `0.2.1`: signatures may still move. Every signature below was read from the code.
+Public surface of `import streamlit_coco as st_coco`, and of `streamlit_coco.policy` and `streamlit_coco.testing`. `0.2.2`: signatures may still move. Every signature below was read from the code.
 
 **Related:** [README](../README.md) · [Ask CoCo feature file](features/ask-coco/ask-coco.md) (the decisions and their reasons) · [Local deployment](deployment/local.md) · [SDK docs](https://docs.snowflake.com/en/user-guide/cortex-code-agent-sdk/cortex-code-agent-sdk)
 
@@ -48,6 +48,8 @@ def ask_coco(
     agent: Callable | None = None,
     connection: str | None = None,
     on_rail: Callable[[], Any] | None = None,
+    on_layout: Callable[[str], Any] | None = None,
+    split: bool = False,
 ) -> Window: ...
 ```
 
@@ -68,6 +70,8 @@ Mounts the launcher (bottom right) and the window, and returns the handle. Call 
 | `agent` | A function `(emit) -> agent`, for tests and for another adapter. `None` gives the Cortex adapter, or the scripted agent when `STREAMLIT_COCO_AGENT=mock`. |
 | `connection` | Snowflake profile name. When the window is not connected yet, it connects with this profile. The Copilot rail passes the profile it is already using, so Minimize does not ask you to connect again. |
 | `on_rail` | A function `() -> None`. When set, the window header shows **Restore**. Using it calls the function, then reruns the page. `copilot_rail` uses it to bring its column back after Minimize. |
+| `on_layout` | A function `(place: str) -> None`, called when the window changes place: `"closed"` (minimised), `"float"`, `"left"`, `"right"` (attached to that edge, the whole height of the page, `min(30rem, 100vw)` wide) or `"full"`. The page then reruns once, so it can lay itself out (a column, a narrower grid). Read the same value on any run with `get_window(key).place`. The browser also writes it on the page: `data-coco-place` on `<html>` and the width in `--coco-dock-w`, for the page's own CSS. |
+| `split` | `True`: while the window is attached to the left or the right edge, the page takes the rest of the screen instead of being covered (Streamlit's app container moves over by the dock's width). Off by default. Full page does not split: there is nothing to share. |
 
 Raises `CocoError` before drawing anything when Streamlit is older than 1.55 or `cwd` does not name an existing directory.
 
@@ -255,6 +259,8 @@ class Features:
         session_details: bool = False,
         reasoning: bool = False,
         download_csv: bool = False,
+        dock: bool = True,
+        full_page: bool = True,
     ): ...
 
 # Features.all() builds one with everything on: the playground
@@ -268,6 +274,8 @@ A feature appears only when you switch it on or supply its data. A host that use
 | `steps` | One card per tool call. Off: only failed and refused steps stay, and the sentences CoCo said. |
 | `motion` | The window's animation. It ignores the system's reduced-motion setting. |
 | `copy` | Copy on answers, code and tables. |
+| `dock` | Two icons in the window's header attach it to the left or the right edge, on the whole height of the page. The pressed icon puts the window back. The place is kept in the browser while the page lives. Off: the icons are not there. |
+| `full_page` | An icon in the window's header makes it fill the page. The pressed icon puts the window back. Off: the icon is not there. |
 | `page_text` | Each message carries the text the page shows (more data leaves the browser). |
 | `page_exclude` | CSS selectors left out of that text. |
 | `attachments` | An `Attachments`: the field accepts files. |
@@ -716,5 +724,5 @@ python -m streamlit_coco.testing.domdiff [--ref HEAD] [--only REGEX]
 ## Package metadata
 
 ```python
-st_coco.__version__  # "0.2.1"
+st_coco.__version__  # "0.2.2"
 ```

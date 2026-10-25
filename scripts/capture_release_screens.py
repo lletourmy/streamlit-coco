@@ -3,9 +3,10 @@
 usage: .venv/bin/python scripts/capture_release_screens.py [out_dir] [shot ...]
        (needs the e2e extra: `uv run --extra e2e python scripts/capture_release_screens.py`)
 
-shots: hero minimize simple (all three by default). `out_dir` defaults to
-doc/releases/<version>/screenshots (the version of pyproject.toml). The files are the ones
-doc/releases/<version>/screenshots/README.md lists: hero.png, 01-minimize.png, 02-simple-chat.png.
+shots: split full hint (the three of 0.2.2, by default) · hero minimize simple (those of 0.2.0).
+`out_dir` defaults to doc/releases/<version>/screenshots (the version of pyproject.toml). The files
+are the ones doc/releases/<version>/screenshots/README.md lists. 0.2.2: hero.png (split),
+01-full-page.png, 02-hint.png.
 
 The servers run with a throw-away HOME (/tmp/coco_demo) that holds one dummy connection profile
 and a link to the cortex program, so neither a real profile name nor the maintainer's path reaches a
@@ -30,13 +31,13 @@ from playwright.sync_api import sync_playwright
 REPO = Path(__file__).resolve().parents[1]
 _VERSION = re.search(r'^version = "([^"]+)"', (REPO / "pyproject.toml").read_text(), re.M)
 _ARGS = sys.argv[1:]
-_SHOT_NAMES = {"hero", "minimize", "simple"}
+_SHOT_NAMES = {"split", "full", "hint", "hero", "minimize", "simple"}
 OUT = (
     Path(_ARGS.pop(0)).resolve()
     if _ARGS and _ARGS[0] not in _SHOT_NAMES
     else REPO / "doc" / "releases" / (_VERSION.group(1) if _VERSION else "next") / "screenshots"
 )
-SHOTS = _ARGS or ["hero", "minimize", "simple"]
+SHOTS = _ARGS or ["split", "full", "hint"]
 OUT.mkdir(parents=True, exist_ok=True)
 WIDE = {"width": 1440, "height": 1000}
 SIMPLE = {"width": 1440, "height": 900}
@@ -130,6 +131,15 @@ def both(page, url: str) -> None:
     settle(page, 1500)
 
 
+def ask_coco_page(page, url: str, *, split: bool) -> None:
+    """modern_chat on its first surface (Ask CoCo), the window open and connected."""
+    page.goto(url, wait_until="domcontentloaded")
+    page.get_by_text("Split" if split else "Overlay", exact=True).first.click(timeout=30_000)
+    settle(page, 1500)
+    open_window(page)
+    connect(page)
+
+
 def stitch(left: Path, right: Path, out: Path) -> None:
     from PIL import Image
 
@@ -158,6 +168,45 @@ def main() -> None:
                 browser = p.chromium.launch(channel="msedge")
             ctx = browser.new_context(viewport=WIDE, device_scale_factor=2, color_scheme="light")
             page = ctx.new_page()
+
+            if {"split", "full", "hint"} & set(SHOTS):
+                page.set_viewport_size(WIDE)
+            if "split" in SHOTS:  # hero.png: the window attached to the right, the page beside it
+                ask_coco_page(page, modern_url, split=True)
+                say(page, "reads")
+                page.get_by_role("button", name="Allow", exact=True).wait_for(timeout=20_000)
+                page.get_by_role("button", name="Attach to the right").click()
+                page.get_by_text("Window place").first.wait_for(timeout=20_000)
+                page.mouse.move(300, 900)  # no hint in the picture
+                settle(page, 2000)
+                page.screenshot(path=str(OUT / "hero.png"))
+
+            if "full" in SHOTS:  # 01-full-page.png: the window on the whole page
+                ask_coco_page(page, modern_url, split=False)
+                say(page, "reads")
+                page.get_by_role("button", name="Allow", exact=True).wait_for(timeout=20_000)
+                page.get_by_role("button", name="Full page").click()
+                page.mouse.move(300, 900)
+                settle(page, 1500)
+                page.screenshot(path=str(OUT / "01-full-page.png"))
+
+            if "hint" in SHOTS:  # 02-hint.png: the title bar, a hint under the pressed icon
+                ask_coco_page(page, modern_url, split=False)
+                page.get_by_role("button", name="Attach to the right").click()
+                settle(page, 1500)
+                page.get_by_role("button", name="Floating window").hover()
+                page.wait_for_function(
+                    "() => [...document.querySelectorAll('*')].some(e => e.shadowRoot && "
+                    "[...e.shadowRoot.querySelectorAll('[data-a=layout]')].some(b => "
+                    "getComputedStyle(b, '::after').visibility === 'visible'))",
+                    timeout=5_000,
+                )
+                settle(page, 400)
+                box = page.viewport_size
+                page.screenshot(
+                    path=str(OUT / "02-hint.png"),
+                    clip={"x": box["width"] - 520, "y": 0, "width": 520, "height": 150},
+                )
 
             if "hero" in SHOTS:
                 both(page, modern_url)

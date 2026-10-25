@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "streamlit-coco"
-version = "0.2.1"
+version = "0.2.2"
 description = "Streamlit component and Python library for Snowflake CoCo (Cortex Code)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -81,3 +81,10 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
+
+[tool.uv]
+# filelock 4.2.1 fixes CVE-2026-112907, -112913 and -112940. snowflake-connector-python 4.8.0
+# (via cortex-code-agent-sdk) still says filelock<4, but only uses FileLock, BaseFileLock and Timeout,
+# which 4.x keeps. filelock 4 needs Python 3.11, so Python 3.10 keeps 3.x. Development lock only:
+# this is not in the wheel's metadata. Drop it once the connector allows filelock 4.
+override-dependencies = ["filelock>=4.2.1; python_full_version >= '3.11'"]

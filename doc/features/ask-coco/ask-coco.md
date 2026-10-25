@@ -1,6 +1,6 @@
 # Ask CoCo: the window becomes the package's interface (0.2.0)
 
-Status: released in `0.2.0` (2026-10-20); the window is opt-in. The 0.1.9 chat family
+Status: released in `0.2.0` (2026-10-20); the window is opt-in. `0.2.2` adds the window's places (left, right, full page), the page callback `on_layout` and `split`. The 0.1.9 chat family
 (`chat`, `panel`, `copilot_rail`) is the default again. Pass `mini=True` to one of those, or call
 `ask_coco(cwd)`, to mount the floating window. The sheet below is the other developer's record of
 the window; where it says the chat family is removed, the code on this branch keeps it.
@@ -158,6 +158,8 @@ st_coco.Features(
     session_details=False,  # the menu offers Session details
     reasoning=False,        # CoCo's reasoning as a fold among the steps
     download_csv=False,     # Download CSV in the wider table view
+    dock=True,              # header icons: attach the window to the left or the right edge
+    full_page=True,         # header icon: the window fills the page
 )
 st_coco.Features.all()      # everything on: the playground
 ```
@@ -359,6 +361,7 @@ Found when this file was checked against the code (the code stands; the text abo
   [`test-checklist.md`](test-checklist.md).
 - One window per page: two `ask_coco` calls with different keys draw two launchers at the same place.
 - The window ignores the system's reduced-motion setting **(client)**; `Features(motion=False)` restores it.
+- The window has three places **(client)**: floating (default), attached to the left or the right edge on the full height of the page (30 rem wide), or the full page (one rem around, the conversation 52 rem wide in the middle). Three icons in the header, the pressed one goes back to floating; `Features(dock=False)` removes the two attach icons and `Features(full_page=False)` the full page one; both are on by default. A click on the title bar (not on one of its buttons) minimises the window. The window then covers Streamlit's header and sidebar (z-index 1000000, under its dialogs and popovers). The page is not pushed aside unless `ask_coco(split=True)`: then the app container takes the rest of the screen while the window is attached. `ask_coco(on_layout=fn)` calls `fn(place)` on each change (`closed`, `float`, `left`, `right`, `full`) and reruns the page once; `get_window(key).place` reads it on any run; the browser writes `data-coco-place` and `--coco-dock-w` on `<html>`. Each icon of the title bar shows its hint after 750 ms (no native tooltip).
 - With the keyboard, Allow and Decline are reached with Shift+Tab from the field; a request that arrives under a
   Streamlit dialog cannot be clicked until the dialog is closed.
 

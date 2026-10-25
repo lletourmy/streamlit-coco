@@ -13,8 +13,10 @@ the one thing that reruns the page, once, after `on_files_changed` was called.
 What the component receives as `data`: view, ack, open_token, sess, spark, labels (the table of
 streamlit_coco.labels with the host's overrides), theme ({name: CSS value} over the CSS defaults,
 plus `avoid`, the selectors the launcher must clear), exclude (Features.page_exclude),
-features ({motion, copy, steps}), and rail (true when a header icon restores the
-Copilot rail).
+features ({motion, copy, steps, dock, full_page}), and rail (true when a header icon restores the
+Copilot rail). `place` ("closed", "float", "left", "right" or "full") is the window's place as
+the browser reports it; the browser also writes it on the page (`data-coco-place` on <html>, and
+`--coco-dock-w` for the width of a docked window).
 """
 
 from __future__ import annotations
@@ -37,6 +39,7 @@ from streamlit_coco.errors import CocoError
 # says the same (tests/test_streamlit_floor.py).
 STREAMLIT_FLOOR = (1, 55)
 _REFUSED = ("allowed_tools", "disallowed_tools", "require_approval_for")
+PLACES = ("closed", "float", "left", "right", "full")  # where the window is, as the browser says
 
 
 def _version(text: str) -> tuple[int, ...]:
@@ -67,6 +70,16 @@ def _component():
         js=assets.js(),
         isolate_styles=True,
     )
+
+
+# split=True: while the window is attached to an edge, the page takes the rest of the screen. The
+# browser writes the place and the width on <html> (static/coco/coco.js, reportPlace).
+_SPLIT_CSS = """
+        <style>
+        html[data-coco-place="left"] [data-testid="stApp"] { left: var(--coco-dock-w, 0px); }
+        html[data-coco-place="right"] [data-testid="stApp"] { right: var(--coco-dock-w, 0px); }
+        </style>
+        """
 
 
 def _slot(key: str) -> str:
@@ -101,6 +114,13 @@ class Window:
     def conversation(self):
         """The conversation object (view and actions as plain data)."""
         return self._s["conv"]
+
+    @property
+    def place(self) -> str:
+        """Where the window is now: "closed" (minimised), "float", "left", "right" (attached to
+        that edge) or "full" (the whole page). Read it on each run; give `ask_coco(on_layout=)` to
+        have the page rerun when it changes."""
+        return self._s.get("place", "closed")
 
     # ---- the application asks CoCo
     def ask(self, label: str, text: str | None = None, *, key: str | None = None) -> bool:
@@ -197,6 +217,17 @@ def _on_act(key: str) -> None:
     action = {k: v for k, v in act.items() if k not in ("a", "seq")} | {"type": act["a"]}
     if action["type"] == "poll":
         return
+    if action["type"] == "layout":
+        place = action.get("place")
+        f = s["conv"].features
+        allowed = (place == "full" and f.full_page) or (place in ("left", "right") and f.dock)
+        if place in ("closed", "float") or allowed:
+            changed, s["place"] = s.get("place") != place, place
+            fn = s.get("on_layout")
+            if changed and callable(fn):
+                fn(place)
+                s["page_rerun"] = True  # the page lays itself out for the new place
+        return
     if action["type"] == "rail":
         # This runs as a widget callback. st.rerun() here is a no-op and shows
         # a warning. The flag is read on the fragment run that follows.
@@ -245,7 +276,13 @@ def _window(key: str) -> None:
             "labels": s["labels"],
             "theme": s["theme"],
             "exclude": list(f.page_exclude),
-            "features": {"motion": f.motion, "copy": f.copy, "steps": f.steps},
+            "features": {
+                "motion": f.motion,
+                "copy": f.copy,
+                "steps": f.steps,
+                "dock": f.dock,
+                "full_page": f.full_page,
+            },
             "rail": callable(s.get("on_rail")),
         },
     )
@@ -266,6 +303,8 @@ def ask_coco(
     agent: Callable | None = None,
     connection: str | None = None,
     on_rail: Callable[[], Any] | None = None,
+    on_layout: Callable[[str], Any] | None = None,
+    split: bool = False,
 ) -> Window:
     """Mount the launcher and the window; see the module docstring and feature file 1.1.
 
@@ -273,7 +312,12 @@ def ask_coco(
     key may change from one run to the next (an application that switches language): the window's
     own texts and every sentence the conversation writes afterwards follow, the conversation is
     kept; what is already written in the thread stays as it was written
-    (Conversation.set_labels)."""
+    (Conversation.set_labels).
+
+    `split=True`: while the window is attached to the left or the right edge, the page takes the
+    rest of the screen (it is not covered). `on_layout(place)` is called when the window changes
+    place ("closed", "float", "left", "right", "full"), then the page reruns once, so the page can
+    lay itself out (a column, a different width); read `get_window(key).place` on each run."""
     _check_streamlit()
     if options is not None:
         bad = [name for name in _REFUSED if getattr(options, name, None)]
@@ -311,6 +355,7 @@ def ask_coco(
             "sess": uuid.uuid4().hex[:8],
             "asked": set(),
             "told": set(),
+            "place": "closed",
         }
     conv = s["conv"]
     # what a host may change from one run to the next: the folder, the rights, the texts
@@ -330,6 +375,7 @@ def ask_coco(
         conv.act({"type": "connect", "profile": connection})
     s["context"] = context
     s["on_rail"] = on_rail
+    s["on_layout"] = on_layout
     s["labels"] = labels_table.table(labels)
     s["theme"] = dict(theme or {})
     # Open only when a host asked, once. Restore closes the window in the browser.
@@ -351,8 +397,16 @@ def ask_coco(
           overflow: visible !important;
           border: 0 !important;
         }}
+        /* Every poll reruns the fragment. When a run is slow Streamlit fades the stale element
+           (opacity < 1), which makes it a stacking context: the position:fixed window blinks and
+           the page's own layers (dataframes, headers) show on top of it. */
+        .st-key-{key}_host [data-testid="stElementContainer"] {{
+          opacity: 1 !important;
+          transition: none !important;
+        }}
         </style>
         """
+        + (_SPLIT_CSS if split else "")
     )
     with st.container(key=f"{key}_host"):
         _window(key)

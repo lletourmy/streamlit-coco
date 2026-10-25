@@ -1,6 +1,6 @@
 # Ask CoCo: live run checklist
 
-Needs the Cortex Code program and a Snowflake connection; costs credits. **Nothing below was run live for 0.2.0**:
+Needs the Cortex Code program and a Snowflake connection; costs credits. **Nothing below was run live for 0.2.0 or 0.2.2**:
 the window, the conversation, the gate and the policy are verified on the scripted agent
 (`STREAMLIT_COCO_AGENT=mock`). Run in a scratch folder, never in a customer repository. Run the examples **without** `STREAMLIT_COCO_AGENT=mock`: with it the agent is scripted. Each example below is a `make` target of this repository's Makefile.
 
@@ -24,3 +24,7 @@ Program version read when the adapter was written: Cortex Code 1.1.104, SDK 1.0.
 | 14 | `make cwd-upload`: attach a file in the field, ask about it | The file is saved in `cwd_upload_workspace/_coco_uploads/<id>/` and read without a request; the sidebar uploader writes to `cwd_upload_workspace/_uploads/` | |
 | 15 | With `options.mcp_servers` set | Each MCP call asks, as a change | |
 | 16 | Disconnect the network during a run | "Connection lost", Reconnect; what was typed is kept | |
+| 17 | `make modern-chat`, **Ask CoCo**, sidebar **Split**: open the window, connect, press the attach-right icon in the title bar | The window takes the full height at the right; the page (sidebar included) shrinks to the rest of the screen; the sidebar says `right`; the cards stack | |
+| 18 | Same page: attach left, then **Full page**, then press the pressed icon, then Minimize | Left: the page moves right. Full page: the window covers the page, the conversation keeps a readable width. The pressed icon returns to floating. Minimize: the page gets its screen back (`closed`) | |
+| 19 | Same page, a real run: ask something that makes CoCo ask a question while docked, and leave it waiting 30 s | The window does not blink and nothing of the page draws over it; Streamlit's header and menu bar are under the title bar | |
+| 20 | `make app-builder`: on each screen open the window | The suggested questions follow the screen; Build this app (Brief) is sent to the window and asks before it writes; Fix with CoCo in the preview is sent to the window | |
