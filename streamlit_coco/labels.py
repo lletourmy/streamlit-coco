@@ -280,6 +280,9 @@ DEFAULT: dict[str, str] = {
     "agent.attach_size": "{mb} MB, the limit is {max} MB",
     "agent.attach_unreadable": "the file could not be read",
     "agent.attach_duplicate": "already attached",
+    "agent.attach_sandbox_none": "this agent has no place for files (the host gives it a stage)",
+    "agent.attach_sandbox_started": "files go in before the first message: start a new one",
+    "agent.attach_sandbox_failed": "the upload to Snowflake failed: {why}",
     # connection
     "agent.problem_signin": "Snowflake refused the sign-in. Try again, or choose another account.",
     "agent.problem_network": "CoCo could not reach Snowflake. Check your network, then try again.",

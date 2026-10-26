@@ -42,13 +42,14 @@ Outreach drafts: [`../../../doc-dev/releases/0.2.2/`](../../../doc-dev/releases/
 
 ## 4. GitHub + PyPI (required before this is public)
 
-Follow [`doc/deployment/publish.md`](../../deployment/publish.md). **Left undone on purpose.**
+Follow [`doc/deployment/publish.md`](../../deployment/publish.md). Published on 2026-10-25.
 
-- [ ] Merge to `-dev` `main`
-- [ ] `COMMIT=1 PUSH=1 MESSAGE="Release 0.2.2" make sync-release`
-- [ ] Tag `v0.2.2` on public `streamlit-coco` and push
-- [ ] Confirm GitHub Release + PyPI wheel
-- [ ] GitHub Release body: CHANGELOG excerpt + `hero.png`
+- [ ] Merge to `-dev` `main` (`release/0.2.2` is not merged or pushed yet)
+- [x] Public sync: commit `f6520a7` "Release 0.2.2" on `lletourmy/streamlit-coco` `main` (`MESSAGE="Release 0.2.2" make sync-release`, pushed 2026-10-25). Before it: the unmerged `docs/0.2.0-publish-urls` branch (the published 0.2.1) was merged into this branch, and the generated `out/` files were cleaned
+- [x] Tag `v0.2.2` on public `streamlit-coco`, annotated, pushed
+- [x] Confirm GitHub Release + PyPI wheel: Release, CI and Security workflows succeeded; PyPI lists `streamlit_coco-0.2.2-py3-none-any.whl` and `streamlit_coco-0.2.2.tar.gz`; the GitHub Release has the wheel, the sdist and the CycloneDX SBOM
+- [ ] GitHub Release body: CHANGELOG excerpt is there (generated from the `0.2.2` section); `hero.png` is not in it yet
+- [ ] Mirror the commit and the tag on `DevoteamSP/streamlit-coco` (optional, see publish.md)
 
 ## 5. Narrative & outreach (strongly recommended — `doc-dev`)
 
@@ -62,8 +63,8 @@ Follow [`doc/deployment/publish.md`](../../deployment/publish.md). **Left undone
 
 | Channel | URL | Date |
 | --- | --- | --- |
-| GitHub Release | | |
-| PyPI | | |
+| GitHub Release (lletourmy) | https://github.com/lletourmy/streamlit-coco/releases/tag/v0.2.2 | 2026-10-25 |
+| PyPI | https://pypi.org/project/streamlit-coco/0.2.2/ | 2026-10-25 |
 | LinkedIn | | |
 | Medium | | |
 | Streamlit Forum | | |

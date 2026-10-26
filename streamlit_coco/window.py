@@ -305,6 +305,7 @@ def ask_coco(
     on_rail: Callable[[], Any] | None = None,
     on_layout: Callable[[str], Any] | None = None,
     split: bool = False,
+    audit: Callable[[dict], Any] | None = None,
 ) -> Window:
     """Mount the launcher and the window; see the module docstring and feature file 1.1.
 
@@ -317,7 +318,10 @@ def ask_coco(
     `split=True`: while the window is attached to the left or the right edge, the page takes the
     rest of the screen (it is not covered). `on_layout(place)` is called when the window changes
     place ("closed", "float", "left", "right", "full"), then the page reruns once, so the page can
-    lay itself out (a column, a different width); read `get_window(key).place` on each run."""
+    lay itself out (a column, a different width); read `get_window(key).place` on each run.
+
+    `audit`: an `AuditLog` (or a function of one record): every call that asked the user, was
+    covered by a standing permission or was refused is written there (audit.py)."""
     _check_streamlit()
     if options is not None:
         bad = [name for name in _REFUSED if getattr(options, name, None)]
@@ -347,6 +351,7 @@ def ask_coco(
             agent=agent or (agent_factory(options) if options is not None else None),
             on_files_changed=on_files_changed,
             connect=connection or None,
+            audit=audit,
         )
         s = st.session_state[slot] = {
             "conv": conv,
@@ -366,6 +371,7 @@ def ask_coco(
         on_files_changed,
     )
     conv.set_labels(labels)
+    conv.audit = audit
     if features is not None:
         conv.features = features
     # A rail that is already connected: start this client with the same profile. The two
@@ -376,7 +382,9 @@ def ask_coco(
     s["context"] = context
     s["on_rail"] = on_rail
     s["on_layout"] = on_layout
-    s["labels"] = labels_table.table(labels)
+    # the agent's own words (the managed agent works in a sandbox, not in a folder), the host's over
+    own = getattr(conv.agent, "labels", None) or {}
+    s["labels"] = labels_table.table({**own, **(labels or {})})
     s["theme"] = dict(theme or {})
     # Open only when a host asked, once. Restore closes the window in the browser.
     if st.session_state.pop(f"{slot}:reveal", False):

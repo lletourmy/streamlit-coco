@@ -3,7 +3,9 @@
 usage: .venv/bin/python scripts/capture_release_screens.py [out_dir] [shot ...]
        (needs the e2e extra: `uv run --extra e2e python scripts/capture_release_screens.py`)
 
-shots: split full hint (the three of 0.2.2, by default) · hero minimize simple (those of 0.2.0).
+shots: split full hint (the three of 0.2.2, by default) · hero minimize simple (those of 0.2.0) ·
+managed (0.3.0: hero, 01-first-screen, 02-attach and 03-audit: the window on the managed agent) ·
+shop (0.3.0: 04-shop-library: the Skills shop on its sample skills).
 `out_dir` defaults to doc/releases/<version>/screenshots (the version of pyproject.toml). The files
 are the ones doc/releases/<version>/screenshots/README.md lists. 0.2.2: hero.png (split),
 01-full-page.png, 02-hint.png.
@@ -31,7 +33,7 @@ from playwright.sync_api import sync_playwright
 REPO = Path(__file__).resolve().parents[1]
 _VERSION = re.search(r'^version = "([^"]+)"', (REPO / "pyproject.toml").read_text(), re.M)
 _ARGS = sys.argv[1:]
-_SHOT_NAMES = {"split", "full", "hint", "hero", "minimize", "simple"}
+_SHOT_NAMES = {"split", "full", "hint", "hero", "minimize", "simple", "managed", "shop"}
 OUT = (
     Path(_ARGS.pop(0)).resolve()
     if _ARGS and _ARGS[0] not in _SHOT_NAMES
@@ -62,7 +64,7 @@ def neutral_home() -> None:
         (HOME / ".local" / "bin" / "cortex").symlink_to(real)
 
 
-def serve(script: str) -> tuple[subprocess.Popen, str]:
+def serve(script: str, **extra: str) -> tuple[subprocess.Popen, str]:
     port = free_port()
     env = {
         **os.environ,
@@ -72,6 +74,7 @@ def serve(script: str) -> tuple[subprocess.Popen, str]:
         "STREAMLIT_COCO_MOCK_PROFILES": "demo",
         "STREAMLIT_BROWSER_GATHER_USAGE_STATS": "false",
         "STREAMLIT_SERVER_HEADLESS": "true",
+        **extra,
     }
     proc = subprocess.Popen(
         [
@@ -140,6 +143,27 @@ def ask_coco_page(page, url: str, *, split: bool) -> None:
     connect(page)
 
 
+def audit_png(browser, path: Path, out: Path) -> None:
+    """The audit file as a picture: its lines, as the application wrote them."""
+    import html
+    import json
+
+    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
+    body = "\n".join(html.escape(json.dumps(r, ensure_ascii=False)) for r in rows[-2:])
+    page = browser.new_context(
+        viewport={"width": 1000, "height": 330}, device_scale_factor=2
+    ).new_page()
+    page.set_content(
+        "<body style='margin:0;background:#17181c;color:#e8e8ea;padding:28px;"
+        "font:14px/1.6 ui-monospace,Menlo,monospace'>"
+        "<div style='color:#8b8f99;margin-bottom:12px;font:600 13px system-ui'>"
+        "logs/coco-audit.jsonl</div>"
+        f"<pre style='margin:0;white-space:pre-wrap;word-break:break-all'>{body}</pre>"
+    )
+    page.screenshot(path=str(out))
+    page.close()
+
+
 def stitch(left: Path, right: Path, out: Path) -> None:
     from PIL import Image
 
@@ -157,10 +181,21 @@ def main() -> None:
     neutral_home()
     procs = []
     try:
-        modern, modern_url = serve("examples/modern_chat/app.py")
-        procs.append(modern)
-        simple, simple_url = serve("examples/chat_app.py")
-        procs.append(simple)
+        modern_url = simple_url = managed_url = shop_url = ""
+        if {"split", "full", "hint", "hero", "minimize"} & set(SHOTS):
+            modern, modern_url = serve("examples/modern_chat/app.py")
+            procs.append(modern)
+        if "simple" in SHOTS:
+            simple, simple_url = serve("examples/chat_app.py")
+            procs.append(simple)
+        if "managed" in SHOTS:
+            managed, managed_url = serve(
+                "examples/e2e_managed_harness.py", COCO_E2E_WORKSPACE=str(HOME / "work")
+            )
+            procs.append(managed)
+        if "shop" in SHOTS:
+            shop, shop_url = serve("examples/skills_hub/app.py")
+            procs.append(shop)
         with sync_playwright() as p:
             try:
                 browser = p.chromium.launch()
@@ -216,6 +251,44 @@ def main() -> None:
                 page.get_by_role("button", name="Allow", exact=True).wait_for(timeout=20_000)
                 settle(page)
                 page.screenshot(path=str(OUT / "hero.png"))
+
+            if "managed" in SHOTS:  # 0.3.0: the window on the managed agent
+                page.set_viewport_size(WIDE)
+                window_box = {"x": 940, "y": 385, "width": 500, "height": 610}
+                page.goto(managed_url, wait_until="domcontentloaded")
+                open_window(page)
+                page.get_by_role("textbox", name="Ask CoCo").wait_for(timeout=30_000)
+                settle(page, 1500)
+                page.screenshot(path=str(OUT / "01-first-screen.png"), clip=window_box)
+                say(page, "run a risky command")  # hero.png: a command waits for Allow
+                page.get_by_role("button", name="Allow", exact=True).wait_for(timeout=20_000)
+                page.mouse.move(300, 900)
+                settle(page, 1200)
+                page.screenshot(path=str(OUT / "hero.png"))
+                page.get_by_role("button", name="Allow", exact=True).click()
+                page.get_by_text("The command ran.").first.wait_for(timeout=20_000)
+                settle(page, 800)
+                audit_png(browser, HOME / "managed-audit.jsonl", OUT / "03-audit.png")
+
+                page.goto(managed_url, wait_until="domcontentloaded")  # 02-attach.png
+                open_window(page)
+                page.get_by_role("textbox", name="Ask CoCo").wait_for(timeout=30_000)
+                sample = HOME / "orders_q3.csv"
+                sample.write_text("item,qty\nwidget,3\ngadget,4\n", encoding="utf-8")
+                page.locator("section.cc input[type=file]").set_input_files(str(sample))
+                page.get_by_text("orders_q3.csv").first.wait_for(timeout=20_000)
+                say(page, "what is in the file")
+                page.get_by_text("/uploads/", exact=False).first.wait_for(timeout=20_000)
+                page.mouse.move(300, 900)
+                settle(page, 1200)
+                page.screenshot(path=str(OUT / "02-attach.png"), clip=window_box)
+
+            if "shop" in SHOTS:  # the Skills shop on its sample skills, a scripted chat
+                page.set_viewport_size(WIDE)
+                page.goto(shop_url, wait_until="domcontentloaded")
+                page.get_by_role("button", name="Open").first.wait_for(timeout=30_000)
+                settle(page, 1200)
+                page.screenshot(path=str(OUT / "04-shop-library.png"))
 
             if "minimize" in SHOTS:
                 both(page, modern_url)
