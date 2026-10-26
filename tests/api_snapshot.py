@@ -31,6 +31,8 @@ _PRIMITIVES = (type(None), bool, int, float, str)
 def _default(value: Any) -> str:
     if value is inspect.Parameter.empty:
         return "<required>"
+    if value == sys.platform:  # `Command(platform=sys.platform)`: the machine's, not the API's
+        return "<object>"
     if isinstance(value, _PRIMITIVES):
         return repr(value)
     return "<object>"
