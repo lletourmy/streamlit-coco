@@ -2,11 +2,11 @@
 
 Living plan. Product detail: [doc/prd.md](prd.md). Shipped history: [CHANGELOG.md](../CHANGELOG.md).
 
-**Status:** `0.3.0` prepared on 2026-10-26, not yet published (the managed agent, an audit log, managed file upload; experimental, on `dev/0.3.0-remote-api`, pushed). `0.2.2` was published on 2026-10-25 (tag `v0.2.2` on lletourmy/streamlit-coco). The 0.1.9 chat family stays the default; Ask CoCo is opt-in ([feature file](features/ask-coco/ask-coco.md)). The last public release is `0.2.2` ([pypi.org/project/streamlit-coco](https://pypi.org/project/streamlit-coco/)). Next: close the open items of `0.3.0`, then Streamlit in Snowflake as `0.3.5`.
-**Publisher:** temporary Trusted Publisher on [lletourmy/streamlit-coco](https://github.com/lletourmy/streamlit-coco); public tree also synced to [DevoteamSP/streamlit-coco](https://github.com/DevoteamSP/streamlit-coco). Used for the last cut (`0.2.2`).
+**Status:** `0.3.0` published on 2026-10-26 (tag `v0.3.0` on lletourmy/streamlit-coco; the managed agent, an audit log with redaction and outcomes, managed file upload; experimental). `0.2.2` was published on 2026-10-25. The 0.1.9 chat family stays the default; Ask CoCo is opt-in ([feature file](features/ask-coco/ask-coco.md)). The last public release is `0.3.0` ([pypi.org/project/streamlit-coco](https://pypi.org/project/streamlit-coco/)). Next: Streamlit in Snowflake as `0.3.5`.
+**Publisher:** temporary Trusted Publisher on [lletourmy/streamlit-coco](https://github.com/lletourmy/streamlit-coco); public tree also synced to [DevoteamSP/streamlit-coco](https://github.com/DevoteamSP/streamlit-coco). Used for the last cut (`0.3.0`).
 **Last updated:** 2026-10-26
-**Last cut:** [releases/0.2.2/](releases/0.2.2/); **prepared:** [releases/0.3.0/](releases/0.3.0/)
-**Next cuts:** `0.3.0` managed agent (no CLI, prepared) → `0.3.5` Streamlit in Snowflake → `0.4.0` Native App
+**Last cut:** [releases/0.3.0/](releases/0.3.0/) (previous: [releases/0.2.2/](releases/0.2.2/))
+**Next cuts:** `0.3.5` Streamlit in Snowflake → `0.4.0` Native App
 
 > **Before every release:** complete [releases/X.Y.Z/CHECKLIST.md](releases/README.md) (CHANGELOG, this roadmap, PRD, screenshots, [public issues](https://github.com/DevoteamSP/streamlit-coco/issues)) and outreach under `doc-dev/releases/` in the development repository, then [deployment/publish.md](deployment/publish.md).
 
@@ -21,7 +21,7 @@ Living plan. Product detail: [doc/prd.md](prd.md). Shipped history: [CHANGELOG.m
 
 | Priority | Item | Ref |
 | -------- | ---- | --- |
-| P0 | **Tag `0.3.0`**: the cut is prepared and verified (full suite, wheel, a live browser run). What is left is the maintainers' publishing steps: issues, merge, sync, tag | [releases/0.3.0/CHECKLIST.md](releases/0.3.0/CHECKLIST.md) · [#4](https://github.com/DevoteamSP/streamlit-coco-dev/issues/4) |
+| P0 | **After `0.3.0`**: post the issue comments (drafts in `doc-dev/releases/0.3.0/ISSUES.md`), the LinkedIn visual and posts; then plan `0.3.5` (Streamlit in Snowflake) | [releases/0.3.0/CHECKLIST.md](releases/0.3.0/CHECKLIST.md) · [#4](https://github.com/DevoteamSP/streamlit-coco-dev/issues/4) |
 | P1 | **Skills shop** — what the experimental example left open (two skills in a chat, the Playwright test, the page behind the Native App ingress, caller's rights) | [brief](../doc-dev/briefs/skills-hub-managed.md) · [#12](https://github.com/DevoteamSP/streamlit-coco/issues/12) |
 
 
@@ -149,11 +149,11 @@ Product-shaped ideas (examples, RFCs, later catalogue types) live in this table.
 
 
 
-## Next — v0.3.0 — Managed agent, local Streamlit (no CoCo CLI)
+## v0.3.0 — Managed agent, local Streamlit (no CoCo CLI)
 
-`streamlit run` on a laptop or VM. The Cortex Agent SDK runs Snowflake's managed coding agent; Bash / Read / Write run in the **Snowflake sandbox**, not on the host. The `cortex` CLI is not required. Development branch: `dev/0.3.0-remote-api`. The managed agent is experimental until the items under "Left for the cut" are closed.
+`streamlit run` on a laptop or VM. The Cortex Agent SDK runs Snowflake's managed coding agent; Bash / Read / Write run in the **Snowflake sandbox**, not on the host. The `cortex` CLI is not required. Development branch: `dev/0.3.0-remote-api`. Published `2026-10-26`; the managed agent stays experimental (the SDK is a public preview).
 
-**Done (on the branch, release prepared on 2026-10-26)**
+**Shipped in `0.3.0`**
 
 | Item | Status | Ref |
 | ---- | ------ | --- |
@@ -172,14 +172,13 @@ Product-shaped ideas (examples, RFCs, later catalogue types) live in this table.
 | Live run on a Cortex Code CLI (rows 2 to 5), on the managed agent (rows 21 to 31) and `make managed` in a browser on a real account (2026-10-26) | ✅ partial | [test-checklist](features/ask-coco/test-checklist.md) |
 | Skills shop example and Native App (experimental): skills on a stage, a chat with one skill, packaged as an SPCS Native App; run live | ✅ | `make skills-hub` · `make native-shop-deploy` |
 
-**Left before the tag**
+**Left after the tag**
 
 | Item | Status | Ref |
 | ---- | ------ | --- |
-| SDK pin: `snowflake-cortex-agent-sdk>=0.0.3,<0.1` in the `sdk` and `dev` extras (a preview: re-check each `0.0.x` before a tag) | ✅ | [CHECKLIST](releases/0.3.0/CHECKLIST.md) |
+| SDK pin: `snowflake-cortex-agent-sdk>=0.0.3,<0.1` in the `sdk` and `dev` extras (a preview: re-check each `0.0.x` before the next tag) | ✅ shipped | [CHECKLIST](releases/0.3.0/CHECKLIST.md) |
 | Public GitHub issues: close public #15 and dev #4, comment on #12, #8, #14 (drafts written, nothing posted) | ⏳ | [CHECKLIST](releases/0.3.0/CHECKLIST.md) |
 | LinkedIn visual, `one-pager` refresh | ⏳ | [CHECKLIST](releases/0.3.0/CHECKLIST.md) |
-| Merge to `main`, `make sync-release`, tag `v0.3.0` | ⏳ | [publish.md](deployment/publish.md) |
 
 **Not proven (stated in the feature file):** a conversation of many hours (token renewal), sandbox SQL under caller's rights, `workspace_mounts` (the library only passes the field), a stage the role cannot write (the window says the upload failed; the account's own wording varies).
 

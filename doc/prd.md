@@ -3,7 +3,7 @@
 **Product:** `streamlit-coco` — a Streamlit component and Python library for embedding [Snowflake CoCo](https://www.snowflake.com/en/product/snowflake-coco/) (formerly Cortex Code) in Streamlit applications.
 
 **Author:** —  
-**Status:** `0.3.0` prepared on 2026-10-26, not yet published (the managed agent, an audit log and managed file upload, experimental). `0.2.2` was published on 2026-10-25. The 0.1.9 chat family stays the default; Ask CoCo is opt-in. Next on the [roadmap](roadmap.md): the tag of `0.3.0`, then `0.3.5` / `0.4.0`.
+**Status:** `0.3.0` published on 2026-10-26 (the managed agent, an audit log and managed file upload, experimental). `0.2.2` was published on 2026-10-25. The 0.1.9 chat family stays the default; Ask CoCo is opt-in. Next on the [roadmap](roadmap.md): `0.3.5` (Streamlit in Snowflake), then `0.4.0`.
 **Last updated:** 2026-10-14
 
 ---

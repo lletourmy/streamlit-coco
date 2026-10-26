@@ -1,10 +1,9 @@
 # Release checklist — 0.3.0
 
 **Owner:** streamlit-coco maintainers
-**Target tag date:** not set. Cut prepared 2026-10-26: everything the repository can verify is done; **what is left is yours**: the public issues, the merge, the sync and the tag (section 4), and optionally the Native App page behind its ingress.
+**Tag date:** 2026-10-26 (`v0.3.0`, annotated, on `lletourmy/streamlit-coco` at `3b2bab9`). **Published.** What is left: the public issue comments, the LinkedIn visual and posts, and optionally the Native App page behind its ingress.
 **GitHub Release / PyPI:** see *Published URLs* below (filled in after the tag)
 
-Do not run `make sync-release` or tag `v0.3.0` until Product docs + QA are done.
 
 Outreach drafts: [`../../../doc-dev/releases/0.3.0/`](../../../doc-dev/releases/0.3.0/) (dev-only, not public sync).
 
@@ -46,15 +45,15 @@ Outreach drafts: [`../../../doc-dev/releases/0.3.0/`](../../../doc-dev/releases/
 
 ## 4. GitHub + PyPI (required before this is public)
 
-**Before the tag, the public repository's CI and Security workflows must be green on the pushed commit** (the public tree has no `uv.lock`, so CI resolves fresh with the newest uv; run its steps on a copy of the synced tree first). On 2026-10-26 the first sync failed both and was fixed before the tag (CHANGELOG, Fixed).
+**Before the tag, the public repository's CI and Security workflows must be green on the pushed commit** (the public tree has no `uv.lock`, so CI resolves fresh with the newest uv; run its steps on a copy of the synced tree first). On 2026-10-26 the first sync failed both and was fixed before the tag (CHANGELOG, Fixed). Three things the dev repo's own gates had not shown, all fixed before the tag: (1) a fresh `uv sync` on the public tree failed on the newest uv (0.13.5) because `[tool.uv] environments` made it resolve for Pyodide, where `playwright` has no wheel; (2) gitleaks flagged the fake credentials the audit and skills-shop tests use on purpose (`.gitleaks.toml` allowlist); (3) the 0.2.2 and 0.3.0 API snapshots, taken on macOS, failed on Linux because `Command.platform` defaults to the machine's platform. Lesson: run the public CI's steps on a copy of the synced tree (no lock, newest uv) before the first push.
 
 Follow [`doc/deployment/publish.md`](../../deployment/publish.md).
 
-- [ ] Merge `dev/0.3.0-remote-api` to `-dev` `main`
-- [ ] Public sync (`MESSAGE="Release 0.3.0" make sync-release`)
-- [ ] Tag `v0.3.0` on public `streamlit-coco`, annotated, pushed
-- [ ] Confirm GitHub Release + PyPI wheel and sdist, and the SBOM asset
-- [ ] GitHub Release body: the CHANGELOG excerpt, with `hero.png`
+- [x] Merge `dev/0.3.0-remote-api` to `-dev` `main` (merge commit `596aa44`, then the fixes below on `main`)
+- [x] Public sync to `lletourmy/streamlit-coco`, three commits: `51145b6` "Release 0.3.0" (CI and Security **failed**: see below), `268c272` (CI fixes), `3b2bab9` (compat tests no longer depend on the platform): **CI and Security green on `3b2bab9`**
+- [x] Tag `v0.3.0` on public `streamlit-coco`, annotated, pushed (on `3b2bab9`)
+- [x] Confirm GitHub Release + PyPI: the Release workflow succeeded; the GitHub Release has the wheel, the sdist and the CycloneDX SBOM; PyPI lists `streamlit_coco-0.3.0-py3-none-any.whl` and `streamlit_coco-0.3.0.tar.gz`; `pip install "streamlit-coco[sdk]==0.3.0"` in a clean Python 3.11 environment imports, reports `0.3.0` with `snowflake-cortex-agent-sdk` 0.0.3, and runs `ask_coco` on the scripted agent
+- [ ] GitHub Release body: the CHANGELOG excerpt is there (generated); `hero.png` is not in it yet
 - [ ] Mirror the commit and the tag on `DevoteamSP/streamlit-coco` (optional)
 
 ## 5. Narrative & outreach (strongly recommended — `doc-dev`)
@@ -69,8 +68,8 @@ Follow [`doc/deployment/publish.md`](../../deployment/publish.md).
 
 | Channel | URL | Date |
 | --- | --- | --- |
-| GitHub Release | | |
-| PyPI | | |
+| GitHub Release | https://github.com/lletourmy/streamlit-coco/releases/tag/v0.3.0 | 2026-10-26 |
+| PyPI | https://pypi.org/project/streamlit-coco/0.3.0/ | 2026-10-26 |
 | LinkedIn | | |
 | Medium | | |
 | Streamlit Forum | | |
