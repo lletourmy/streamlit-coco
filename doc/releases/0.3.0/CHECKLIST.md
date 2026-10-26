@@ -46,6 +46,8 @@ Outreach drafts: [`../../../doc-dev/releases/0.3.0/`](../../../doc-dev/releases/
 
 ## 4. GitHub + PyPI (required before this is public)
 
+**Before the tag, the public repository's CI and Security workflows must be green on the pushed commit** (the public tree has no `uv.lock`, so CI resolves fresh with the newest uv; run its steps on a copy of the synced tree first). On 2026-10-26 the first sync failed both and was fixed before the tag (CHANGELOG, Fixed).
+
 Follow [`doc/deployment/publish.md`](../../deployment/publish.md).
 
 - [ ] Merge `dev/0.3.0-remote-api` to `-dev` `main`

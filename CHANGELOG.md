@@ -45,6 +45,7 @@ Snowflake's managed coding agent runs in the same window, with no `cortex` progr
 ### Fixed
 
 - The line that says what a standing permission covers ("CoCo no longer asks before it ...") ended with two full stops.
+- The public CI failed on a fresh `uv sync` (the public tree has no `uv.lock`): with `[tool.uv] environments`, uv 0.13 also resolves for Pyodide (emscripten), where `playwright` has no wheel. The environments now leave emscripten out (both `pyproject.toml` files; locks relocked, no package version changed). Gitleaks flagged the fake credentials the audit and skills-shop tests use on purpose: `.gitleaks.toml` allowlists those two test files and keeps the default rules.
 
 ## [0.2.2] — 2026-10-25
 

@@ -11,7 +11,7 @@ dependencies = [
 
 [tool.uv]
 # The lock covers Python 3.11 and later (Pillow 13 needs it); see the root pyproject.toml.
-environments = ["python_full_version >= '3.11'"]
+environments = ["python_full_version >= '3.11' and sys_platform != 'emscripten'"]
 
 [tool.uv.sources]
 streamlit-coco = { path = "../..", editable = true }
